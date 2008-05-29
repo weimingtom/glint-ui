@@ -1,0 +1,6 @@
+This is Glint, a simple UI and rendering framework.
+It is supposed to be compiled and linked as part of the application
+which is using it. In other words, it is not designed to have its own
+redistributable DLL.
+
+Makefile in this directory is building sample application in sample_apps dir.
