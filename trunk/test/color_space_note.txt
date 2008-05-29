@@ -1,0 +1,29 @@
+Since we load test images from files and then compare the RGB values of
+pixels with expected values, there are some words to be said on color
+spaces and profiles (which can be thought as the same thing for the
+purposes of creating test images).
+
+We store test images with sRGB profile assigned to them (meaning alongside
+with pixel values the file contains a stamp saying "treat these pixel values
+as 'sRGB' pixel values".
+On a platforms that care about this (Mac) we use the same  sRGB profile to
+expand the images loaded from files into ARGB bitmaps. This ensures that we get
+RRBBGG pixel values that we expect and not some result of colormatching between
+2 random color spaces.
+Basically, if various system APIs discover different color spaces along the way,
+they try to munge the values of pixels on the color space boundaries. The only
+way to ensure that if you wrote lets say a pixel FFFF00 (RGB for yellow) into
+a file and then after reading it back you indeed see FFFF00 is to make sure you
+use the same color space along the way to not trigger automatic conversion.
+
+Note that Photoshop saves sRGB with name "sRGB" and Mac (at least Leopard)
+uses "sRGB IEC61966-2.1" for the same purpose so the profile in
+Photoshop-created files should be changed (simple way to do it is to use Preview
+and "Tools/Assign Profile..." menu option. Then save the image.
+
+You may still have problems if the application that you use to author the image
+saves it with colormatching. For example, Photoshop will do it if you have
+"workspace" color space set to lets say "Adobe" but try to save with color space
+"sRGB" - then your red color FF0000 will be silently converted into sRGB
+counterpart (something like FF1C07) so you won't get what you want later.
+
