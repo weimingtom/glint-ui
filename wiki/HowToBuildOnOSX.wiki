@@ -1,0 +1,27 @@
+#summary How to build sample apps and tests on OSX.
+#labels build,glint,OSX
+This page describes how to build test and sample application(s) on OSX.
+
+If you don't have the code yet, here are the steps, from Terminal window:
+{{{
+cd ~/
+mkdir glint
+svn checkout http://glint-ui.googlecode.com/svn/trunk glint
+}}}
+Now you can just build it:
+{{{
+make
+}}}
+
+That's it. You now should have a simple test and a ssample app(s) bulit in bin-dbg/osx-i386/
+Note that to run the sample applications like hello_world you need to double-click on its bundle in Finder. Just running its executable from command line won't work nicely because of the way OSX treats bundles.
+
+We use GNU make to build. 
+
+To build non-debug bits, use this:
+{{{
+make MODE=opt
+}}}
+The result is going to be in bin-opt/osx-i386
+
+For now, only Intel code is built. 
