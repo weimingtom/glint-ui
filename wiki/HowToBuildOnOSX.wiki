@@ -1,6 +1,5 @@
 #summary How to build sample apps and tests on OSX.
 #labels build,glint,OSX
-This page describes how to build test and sample application(s) on OSX.
 
 If you don't have the code yet, here are the steps, from Terminal window:
 {{{
