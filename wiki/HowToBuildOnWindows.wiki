@@ -1,0 +1,29 @@
+#summary Describes how to build Glint on Windows
+#labels Building,Glint,Windows
+
+== Environment ==
+
+Install the following to create the build environment:
+
+ * Visual Studio 2005 (Perhaps other versions will work too)
+ * Unxutils (to get GNU make utility) - [ftp://garbo.uwasa.fi/win95/unix/UnxUtils.zip download here] or [ftp://garbo.uwasa.fi/win95/unix/UnxUpdates.zip here]
+ * Python (2.4 or 2.5) - [http://www.python.org/ftp/python/2.4.4/python-2.4.4.msi install from here]
+ * Subversion (svn client) - [http://subversion.tigris.org/downloads/subversion-1.4.4.zip from here]
+
+== Getting the code ==
+If you don't have the code yet, here are the steps, from cmd.exe window (assuming c:\projects\glint is the place where you want to keep the code:
+{{{
+cd /d C:\projects
+mkdir glint
+svn checkout http://glint-ui.googlecode.com/svn/trunk glint
+}}}
+
+== Building ==
+
+Now you can just build it (assuming <<python path>> is where your python.exe lives and <<unixutils path>> is where you un-zipped UnxUtils):
+{{{
+cd /d C:\projects\glint
+"c:\Program Files\Microsoft Visual Studio 8\VC\vcvarsall.bat"
+set path=%path%;<<python path>>;<<unxutils path>>\usr\local\wbin
+make
+}}}
