@@ -1,12 +1,19 @@
 #summary How to build sample apps and tests on OSX.
 #labels build,glint,OSX
 
+== Environment ==
+You'd need Leopard (or Tiger) machine with XCode installed. We run build/test on a regular basis on Leopard/XCode 3.0 setup.
+
+== Getting the code ==
 If you don't have the code yet, here are the steps, from Terminal window:
 {{{
 cd ~/
 mkdir glint
 svn checkout http://glint-ui.googlecode.com/svn/trunk glint
 }}}
+
+== Building ==
+
 Now you can just build it:
 {{{
 make
