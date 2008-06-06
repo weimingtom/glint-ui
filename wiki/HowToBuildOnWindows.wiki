@@ -23,3 +23,10 @@ Now you can just build it (assuming the directory structure above):
 cd /d C:\projects\glint-ui\glint
 make
 }}}
+The result is going to be in bin-dbg/win-i386
+
+To build non-debug bits, use this:
+{{{
+make MODE=opt
+}}}
+The result is going to be in bin-opt/win-i386
