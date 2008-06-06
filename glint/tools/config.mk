@@ -136,7 +136,10 @@ ifeq ($(OS),win32)
 CC = cl
 CXX = cl
 OBJ_SUFFIX = .obj
-MKDEP = python.exe tools/mkdepend.py $< $@ > $(@D)/$*.pp
+
+# TODO(dimich): Figure out how to do dependencies without requiring Python
+#MKDEP = python.exe tools/mkdepend.py $< $@ > $(@D)/$*.pp
+MKDEP = echo Compiling without generating dependency information (Win32)
 
 # Most Windows headers use the cross-platform NDEBUG and DEBUG #defines
 # (handled later).  But a few Windows files look at _DEBUG instead.
