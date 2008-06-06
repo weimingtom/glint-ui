@@ -114,7 +114,7 @@ class GlobalTestSuite {
   bool AddTestSuite(TestSuite* test_suite);
   bool RunTestSuites();
   void ResetError() { had_error_ = false; }
-  void GlobalTestSuite::Log(const char *format, ...);
+  void Log(const char *format, ...);
   bool HadError() { return had_error_; }
  private:
   Array<TestSuite> suites_;
