@@ -8,14 +8,15 @@ You'd need Leopard (or Tiger) machine with XCode installed. We run build/test on
 If you don't have the code yet, here are the steps, from Terminal window:
 {{{
 cd ~/
-mkdir glint
-svn checkout http://glint-ui.googlecode.com/svn/trunk glint
+mkdir glint-ui
+svn checkout http://glint-ui.googlecode.com/svn/trunk glint-ui
 }}}
 
 == Building ==
 
 Now you can just build it:
 {{{
+cd ~/glint-ui/glint
 make
 }}}
 
