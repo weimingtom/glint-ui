@@ -43,7 +43,7 @@ namespace glint {
 
 #define TYPE_SYSTEM_STRICT_CHECK
 
-static char* glint_namespace = "http://www.google.com/glint";
+static const char* glint_namespace = "http://www.google.com/glint";
 
 static TypeInfo type_info[] = {
   { glint_namespace,         // namespace_uri

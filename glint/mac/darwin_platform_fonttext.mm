@@ -205,7 +205,6 @@ bool DarwinPlatform::MeasureSimpleText(PlatformFont* platform_font,
   // into a rect of dimensions returned by boundingRectWithSize always wraps
   // the last character into another line; we get around this by padding the
   // width of the rect we return by 1.
-  // Neither a post to macdev@ nor googling suggested a better solution.
   bounds->Set(0, 0, rect.size.width + 1, rect.size.height);
 
   return true;

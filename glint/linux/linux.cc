@@ -126,7 +126,7 @@ bool draw_text_layout(PangoLayout* pango_layout,
   if (!colormap)
     return false;
   ScopedPixmap pixmap(gdk_pixmap_new(NULL, width, height,
-                                     gdk_rgb_get_visual()->depth));
+                                     gdk_colormap_get_visual(colormap)->depth));
   gdk_drawable_set_colormap(pixmap.get(), colormap);
   if (gdk_drawable_get_colormap(pixmap.get()) != colormap)
     return false;
