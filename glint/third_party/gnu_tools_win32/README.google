@@ -1,10 +1,13 @@
 This directory contains tools from the "GNU utilities for Win32" project
-(http://unxutils.sourceforge.net/), which provides "ports of common GNU
-utilities to native Win32".
+(http://unxutils.sourceforge.net/), which provides ports of common GNU
+utilities to native Win32.
 
-The UnxUtils.zip file that can be downloaded from the site includes
+The UnxUtils.zip file that can be downloaded from the site 
+(http://unxutils.sourceforge.net/UnxUtils.zip) includes
 pre-compiled binaries in usr/local/wbin subdirectory.
-I took a very few utilities from there (make, cp, rm, mkdir, uname) that are
-needed to build on Win32 and checked them into 'files' directory.
+
+The 'files' folder here contains only a few executables from this 
+set - enough to build Glint on Win32. On Mac and Linux GNU make
+utility is part of OS.
 
 
