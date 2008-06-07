@@ -23,14 +23,24 @@
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "glint/include/timer.h"
-#include "glint/crossplatform/core_util.h"
+#ifndef GLINT_INCLUDE_CURRENT_TIME_H__
+#define GLINT_INCLUDE_CURRENT_TIME_H__
+
+#include "glint/include/types.h"
 
 namespace glint {
 
-real64 Timer::Seconds() {
-  return platform()->GetCurrentSeconds();
-}
+class CurrentTime {
+ public:
+
+  // Returns absolute seconds (from some unspecified base point)
+  static real64 Seconds();
+
+ private:
+  CurrentTime() {}
+  DISALLOW_EVIL_CONSTRUCTORS(CurrentTime);
+};
 
 }  // namespace glint
 
+#endif  // GLINT_INCLUDE_CURRENT_TIME_H__

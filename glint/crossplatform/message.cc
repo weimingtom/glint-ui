@@ -24,8 +24,8 @@
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "glint/include/message.h"
+#include "glint/include/current_time.h"
 #include "glint/include/node.h"
-#include "glint/include/timer.h"
 #include "glint/include/transform.h"
 
 namespace glint {
@@ -38,7 +38,7 @@ void Message::Clear() {
   work_item = NULL;
   user_data = NULL;
   bubble = false;
-  time_stamp = Timer::Seconds();
+  time_stamp = CurrentTime::Seconds();
   shift_key_pressed = false;
   ctrl_key_pressed = false;
   alt_key_pressed = false;
