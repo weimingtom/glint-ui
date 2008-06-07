@@ -30,9 +30,9 @@
 #include "glint/crossplatform/core_util.h"
 #include "glint/include/animation_timeline.h"
 #include "glint/include/bitmap.h"
+#include "glint/include/current_time.h"
 #include "glint/include/draw_stack.h"
 #include "glint/include/snapshot_stack.h"
-#include "glint/include/timer.h"
 
 // Uncomment to dump UpdateUI time into debugger log.
 // #define UPDATE_PERF
@@ -451,7 +451,7 @@ bool RootUI::DoLayoutLoop() {
     // We are past layout and layout work items. So it's in a stable snapshot.
     // Now, start all pending (new) animations. They will grab post-trigger
     // (final) property values as they are being started.
-    StartPendingAnimations(Timer::Seconds());
+    StartPendingAnimations(CurrentTime::Seconds());
   }
   return true;
 }
@@ -461,7 +461,7 @@ bool RootUI::UpdateUI() {
     return true;
 
 #ifdef UPDATE_PERF
-  real64 start_time = Timer::Seconds();
+  real64 start_time = CurrentTime::Seconds();
 #endif
 
 #ifdef DEBUG_DIRTY_RECTS
@@ -511,7 +511,7 @@ bool RootUI::UpdateUI() {
 #ifdef UPDATE_PERF
     static real64 total_duration = 0;
     static int samples = 0;
-    real64 duration_ms = (Timer::Seconds() - start_time) * 1000.0;
+    real64 duration_ms = (CurrentTime::Seconds() - start_time) * 1000.0;
     total_duration += duration_ms;
     ++samples;
     real64 average = total_duration / samples;
@@ -652,7 +652,7 @@ bool RootUI::TakeSnapshot() {
     stack.Pop();
     if (success) {
       std::stringstream sstream;
-      int current_100ns_time = static_cast<int>(Timer::Seconds() * 10e7);
+      int current_100ns_time = static_cast<int>(CurrentTime::Seconds() * 10e7);
       sstream << snapshot_directory_ << '\\' << current_100ns_time;
       std::ofstream dump_file(sstream.str().c_str(), std::ios_base::trunc);
       if (dump_file.good()) {

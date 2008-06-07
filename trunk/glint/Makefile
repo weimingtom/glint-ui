@@ -42,6 +42,7 @@ XPLAT_CPP_SOURCES = \
 	color.cc \
 	column.cc \
 	core.cc \
+	current_time.cc \
 	draw_stack.cc \
 	image_node.cc \
 	lexer.cc \
@@ -55,7 +56,6 @@ XPLAT_CPP_SOURCES = \
 	size.cc \
 	snapshot_stack.cc \
 	tile_plane.cc \
-	timer.cc \
 	transform.cc \
 	type_system.cc \
 	xml_lite.cc \
