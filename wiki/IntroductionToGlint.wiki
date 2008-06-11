@@ -102,3 +102,23 @@ See those 3 lines of text? Note we put them into Column layout container - that 
 ||alpha||int, from 0 (transparent) to 255 (opaque)||alpha="150"||sets transparency of the node||
 ||transform||translate(float_dx float_dy) scale(float_scale_x float_scale_y) rotate(float_radians) matrix(m00 m01 m10 m11 m02 m12)||transform="rotate(0.3)"||sets transform applied to the element Note that transform is applied after the layout and does not affect layout results||
 ||id||"string"||id="close_button"||Sets ID that is used by code to bind to the node||
+
+*SimpleText* has all the properties of *Node*, plus:
+||text||"string"||text="Hello, World!"||sets the text to render||
+||font_family||"string"||font_family="Tahoma"||sets font to use||
+||font_size||"number"||font_size="18"||sets font size, in points||
+||foreground||"color_ref"||foreground="#FF0000"||sets text color||
+||bold||"bool"||bold="true"||makes it bold||
+||italic||"bool"||italic="true"||makes it italic||
+
+*ImageNode* has all the properties of *Node*, plus:
+||source||"file path"||source="c:\images\foo.png"||sets the image to display. Note that only local file names are supported. In case XML Parser was given a "base dir" (see *XmlParser::Parse(...)* method), relative filenames work too||
+
+*NineGrid* has all the properties of *Node*, plus:
+||source||"file path"||source="c:\images\foo.png"||sets the image to use as a 9-grid. Note that only local file names are supported. In case XML Parser was given a "base dir" (see *XmlParser::Parse(...)* method), relative filenames work too. The 9-grid works like this: it takes center N-pixel column and M-pixel row from the 9-grid image and stretches the image to a given size so that edges and center are filled as needed. Corners simply go to their respective destination corners unmodified, and sides and center are scaled using bilinear interpolation to correctly preserve gradients and non-trivial images. The transparency is, as everywhere else, processed correctly (use png images for transparency)||
+||center_width||int||center_width="50"||sets the width of the center 'column' of a nine-grid partition. This 'column' is centerd in the nine-grid image||
+||center_height||int||center_height="50"||sets the height of the center 'row' of a nine-grid partition. This 'row' is centerd in the nine-grid image||
+||shadow||bool, default is 'false'||shadow="true"||enables shadow around nine-grid image. Since nine-grid typically forms the outline of many UI controls like Buttons, using shadow on them makes then more '3D'||
+
+
+.. to be continued ...
