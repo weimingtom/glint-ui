@@ -1,0 +1,104 @@
+#summary Explains some ideas and usage.
+#labels Intro,howto,Glint,UI,XML
+
+= Introduction =
+
+Glint is a UI framework developed primarily for use in C++ applications. To illustrate the difference from other UI frameworks, here are main design principles of Glint:
+ * Small and fast, compiled from source and statically linked with the app (whose size depends on the features being used)
+ * No separate distribution, no DLLs, reg entries, dirs etc. A small static lib.
+ * Does not use ATL, MFC, COM, extremely moderate use of C++ features like templates to make it readable and portable as much as possible.
+ * It is not all things for all the people - but it is so simple that all people can add all things they want. Basically, it can be thought as a good place to start and then customize.
+ * Most of the code is in a lib that does not make any outward calls - only via platform-encapsulating interface. So to port the whole thing to another platform it's enough to re-implement this interface and recompile. No hidden dependencies whatsoever - everything from memory allocation to taking input to drawing into screen locations is encapsulated into that interface.
+
+= Usage =
+
+To create Glint UI, one performs following tasks:
+ # Create XML 'pages' describing overall look of the UI. That includes also preparation of some images.
+ # Write code (C++) which loads the XML above from resource or file.
+ # Write some more code to find the interactive elements in that XML by id and add message handlers to them.
+ # Iterate on XML (looks) and code (behaviors) more or less independently until satisfied.
+
+==Xml Structure==
+
+You can use simple "see it as you type" application to copy-paste examples from this document or experiment yourself. Just run sample application *glint_pad* (glint_pad.exe on Windows) from build directory. No installs necessary. It parses the XML you edit on the fly and renders what would be rendered on screen.
+
+*Note*: glint_pad is not yet included into Makefile - in couple of days it will be.
+
+XML for Glint is treated in a very transparent way - when parser sees an open tag, it finds a C++ type registered in Glint TypeSystem with similar name and creates an instance of this type. Then it reads all attributes and their values and looks into TypeSystem again to find if the object specified by the opening tag actually has those properties. If there is a match, the callback registered for this type/property combination is called to set the value of the property. Simple. For nested objects, they are created the same way and then set as "default property" on a parent object.
+
+The glint namespace is http://www.google.com/glint, so the simplest possible XML looks like this:
+{{{
+<Node xmlns="http://www.google.com/glint"/>
+}}}
+
+'Node' is the simplest type of the visual element in Glint - it may have background and it may contain other nodes, but that's all. To see your node on the screen, you should give it a background color (default is transparent) and some size (by default, there is nothing to define the size of the node so it's 0,0):
+{{{
+    <Node xmlns="http://www.google.com/glint"
+
+          background="#FFFF00"
+
+          min_width="200"
+
+          min_height="200"
+
+    /> 
+}}}
+
+If you type this into your glint_pad, now you have yellow rectangle on the screen!
+
+Note the '*min_width*' and not '*width*' - since in Glint, we use min_width and max_width that are essentially constraints rather then exact amount. The size/position of things in Glint is computed automatically, so the localization, data fetched in runtime or such actions as user resizing a window do not ruin the carefully designed layout of dialogs and panels - the UI in Glint automatically adjusts according to 'hints' given by designer.
+
+ 
+Here is an example of nested elements. Note how min_width, min_height, horizontal_alignment and vertical_alignment cause the child nodes to be positioned inside of their container:
+{{{
+<Node xmlns="http://www.google.com/glint" background="#FFFF00" min_width="200" min_height="200">
+
+ <Node background="#CCCCCC" min_width="50" min_height="50"/>
+
+ <Node background="#FF0000" min_width="50" min_height="50" vertical_alignment="top" horizontal_alignment="center"/>
+
+ <Node background="#00FF00" min_width="50" min_height="50" vertical_alignment="center" horizontal_alignment="left"/>
+
+ <Node background="#0000FF" min_width="50" min_height="50" vertical_alignment="bottom" horizontal_alignment="right"/>
+
+</Node>
+}}}
+
+Note that the grey Node takes the whole space inside the parent - this is because default value for the horizontal and vertical_alignment is "fill" which asks the child to take as much space as it can inside it's parent container.
+
+ 
+Now, it's time to play with some text:
+{{{
+<Node xmlns="http://www.google.com/glint" background="#FFFF00" min_width="200" min_height="200">
+
+   <Column>
+
+    <SimpleText text="Hello, World!" font_size="24" font_family="Arial" margin="10 10 10 0"/>
+
+    <SimpleText text="Hello, World!" font_size="24" font_family="Times" margin="10 10 10 0"/>
+
+    <SimpleText text="Hello, World!" font_size="24" font_family="Georgia" margin="10 10 10 10"/>
+
+  </Column>
+
+</Node>
+}}}
+
+
+See those 3 lines of text? Note we put them into Column layout container - that makes them to be stacked on top of each other. There is also Row.
+
+==Objects in Glint (for now) and their properties==
+
+*Node*
+||Property||Format||Example||Description||
+||background||#AARRGGBB in hex form or #RRGGBB||background="#FFFF00"||sets background color, may be semi-transparent||
+||min_width||int||min_width="200"||sets the minimum width||
+||min_height||int||min_height="200"||sets the minimum height||
+||max_width||int||max_width="200"||element's layout is notified that this is the limit, if it still tries to grow more then that, it gets clipped||
+||max_height||int||max_height="200"||element's layout is notified that this is the limit, if it still tries to grow more then that, it gets clipped||
+||margin||"left top right bottom"||margin="10 10 10 0"||margin is a transparent "space" on 4 sides of the object, often used for spacing purposes||
+||horizontal_alignment||"fill" (default), "left", "center", "right"||horizontal_alignment="left"||Specifies how to locate the child within its parent||
+||vertical_alignment||"fill" (default), "top", "center", "bottom"||vertical_alignment="top"||Specifies how to locate the child within its parent||
+||alpha||int, from 0 (transparent) to 255 (opaque)||alpha="150"||sets transparency of the node||
+||transform||translate(float_dx float_dy) scale(float_scale_x float_scale_y) rotate(float_radians) matrix(m00 m01 m10 m11 m02 m12)||transform="rotate(0.3)"||sets transform applied to the element Note that transform is applied after the layout and does not affect layout results||
+||id||"string"||id="close_button"||Sets ID that is used by code to bind to the node||
