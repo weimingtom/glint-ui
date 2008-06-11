@@ -24,7 +24,7 @@ You can use simple "see it as you type" application to copy-paste examples from 
 
 *Note*: glint_pad is not yet included into Makefile - in couple of days it will be.
 
-XML for Glint is treated in a very transparent way - when parser sees an open tag, it finds a C++ type registered in Glint TypeSystem with similar name and creates an instance of this type. Then it reads all attributes and their values and looks into TypeSystem again to find if the object specified by the opening tag actually has those properties. If there is a match, the callback registered for this type/property combination is called to set the value of the property. Simple. For nested objects, they are created the same way and then set as "default property" on a parent object.
+XML for Glint is treated in a very transparent way - when parser sees an open tag, it finds a C++ type registered in Glint !TypeSystem (see type_system.{h,cc}) with similar name and creates an instance of this type. Then it reads all attributes and their values and looks into !TypeSystem again to find if the object specified by the opening tag actually has those properties. If there is a match, the callback registered for this type/property combination is called to set the value of the property. Simple. For nested objects, they are created the same way and then set as "default property" on a parent object.
 
 The glint namespace is http://www.google.com/glint, so the simplest possible XML looks like this:
 {{{
@@ -103,7 +103,7 @@ See those 3 lines of text? Note we put them into Column layout container - that 
 ||transform||translate(float_dx float_dy) scale(float_scale_x float_scale_y) rotate(float_radians) matrix(m00 m01 m10 m11 m02 m12)||transform="rotate(0.3)"||sets transform applied to the element Note that transform is applied after the layout and does not affect layout results||
 ||id||"string"||id="close_button"||Sets ID that is used by code to bind to the node||
 
-*SimpleText* has all the properties of *Node*, plus:
+*!SimpleText* has all the properties of *Node*, plus:
 ||text||"string"||text="Hello, World!"||sets the text to render||
 ||font_family||"string"||font_family="Tahoma"||sets font to use||
 ||font_size||"number"||font_size="18"||sets font size, in points||
@@ -111,11 +111,11 @@ See those 3 lines of text? Note we put them into Column layout container - that 
 ||bold||"bool"||bold="true"||makes it bold||
 ||italic||"bool"||italic="true"||makes it italic||
 
-*ImageNode* has all the properties of *Node*, plus:
+*!ImageNode* has all the properties of *Node*, plus:
 ||source||"file path"||source="c:\images\foo.png"||sets the image to display. Note that only local file names are supported. In case XML Parser was given a "base dir" (see *XmlParser::Parse(...)* method), relative filenames work too||
 
-*NineGrid* has all the properties of *Node*, plus:
-||source||"file path"||source="c:\images\foo.png"||sets the image to use as a 9-grid. Note that only local file names are supported. In case XML Parser was given a "base dir" (see *XmlParser::Parse(...)* method), relative filenames work too. The 9-grid works like this: it takes center N-pixel column and M-pixel row from the 9-grid image and stretches the image to a given size so that edges and center are filled as needed. Corners simply go to their respective destination corners unmodified, and sides and center are scaled using bilinear interpolation to correctly preserve gradients and non-trivial images. The transparency is, as everywhere else, processed correctly (use png images for transparency)||
+*!NineGrid* has all the properties of *Node*, plus:
+||source||"file path"||source="c:\images\foo.png"||sets the image to use as a 9-grid. Note that only local file names are supported. In case XML Parser was given a "base dir" (see *!XmlParser::Parse(...)* method), relative filenames work too. The 9-grid works like this: it takes center N-pixel column and M-pixel row from the 9-grid image and stretches the image to a given size so that edges and center are filled as needed. Corners simply go to their respective destination corners unmodified, and sides and center are scaled using bilinear interpolation to correctly preserve gradients and non-trivial images. The transparency is, as everywhere else, processed correctly (use png images for transparency)||
 ||center_width||int||center_width="50"||sets the width of the center 'column' of a nine-grid partition. This 'column' is centerd in the nine-grid image||
 ||center_height||int||center_height="50"||sets the height of the center 'row' of a nine-grid partition. This 'row' is centerd in the nine-grid image||
 ||shadow||"bool", default is 'false'||shadow="true"||enables shadow around nine-grid image. Since nine-grid typically forms the outline of many UI controls like Buttons, using shadow on them makes then more '3D'||
@@ -124,9 +124,9 @@ See those 3 lines of text? Note we put them into Column layout container - that 
 ||direction||"left_to_right", "right_to_left", top_to_bottom" or "bottom_to_top"||direction="top_to_bottom"||Direction in which the row grows. Child nodes of the Row are arranged in specified direction. Basically, "top_to_bottom" makes Row to be a column...||
 ||distribution||"string"||distribution="153,`*`,2`*`"||Specifies the way available space is distributed among children of the Row. Numbers mean fixed pixel size, "natural" means "measure the child and give it its natural size", "`*`" means weighted portions of the remaining space. ||
 
-*Button* has all the properties of *NineGrid*, plus:
+*Button* has all the properties of *!NineGrid*, plus:
 ||enabled||"bool"||enabled="false"||Enables or disables the button . By default, the button is enabled. Disabled button can not be clicked||
-||source||"file path"||source="button_strip.png"||Specifies an "image strip" - the image that has 4 horizontally adjacent equal-size images for all the states of the Button - Normal, MouseOver, Pressed and Disabled, in this order||
+||source||"file path"||source="button_strip.png"||Specifies an "image strip" - the image that has 4 horizontally adjacent equal-size images for all the states of the Button - Normal, !MouseOver, Pressed and Disabled, in this order||
 ||*Note*: the text or images or whatever you want to be inside the Button should be simply nested into it, since Button, as any other node in Glint, is also a container.||
 
 *Column* is a very simple variation of Node - it arranges all its children vertically in a 'column'. Equivalent to:
