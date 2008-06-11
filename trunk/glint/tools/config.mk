@@ -39,7 +39,8 @@ endif
 #   opt = release build
 MODE = dbg
 
-# Uncomment the following line to build with XML support
+# Build with XML support
+# Comment this line to turn off XML parser - saves about 80K of release code.
 ENABLE_XML = -DGLINT_ENABLE_XML
 
 # Set default OS architecture
