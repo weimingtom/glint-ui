@@ -29,6 +29,7 @@
 #include <map>
 #include <sstream>
 
+#undef NOMINMAX
 #include <windows.h>
 #include <wtypes.h>
 #pragma warning(push)
