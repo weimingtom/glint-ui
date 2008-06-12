@@ -9,7 +9,7 @@ Install the following to create the build environment:
  * Visual Studio 2005 (Perhaps other versions will work too)
 
 == Getting the code ==
-If you don't have the code yet, here are the steps, from cmd.exe window (assuming c:\projects\glint is the place where you want to keep the code:
+If you don't have the code yet, here are the steps, from cmd.exe window (assuming c:\projects\glint is the place where you want to keep the code):
 {{{
 cd /d C:\projects
 mkdir glint-ui
