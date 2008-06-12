@@ -11,7 +11,7 @@ if "_%VCINSTALLDIR%_" == "__" (
 )
 
 if "_%VCINSTALLDIR%_" == "__" (
-  echo Please run vcvarsall.bat from VS 2005 installation to set uo compile environment.
+  echo Please run vcvarsall.bat from VS 2005 installation to set up compile environment.
   goto END
 )
 
