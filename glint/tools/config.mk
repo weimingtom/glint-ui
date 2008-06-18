@@ -156,6 +156,7 @@ CPPFLAGS += /nologo \
 CPPFLAGS += -D_WINDOWS \
             -DWINVER=0x0500 \
             -D_WIN32_WINNT=0x0500 \
+            -D_AFX_ALL_WARNINGS \
             $(CPPFLAGS_$(MODE))
 
 COMPILE_FLAGS_dbg = /MTd
@@ -169,6 +170,9 @@ COMPILE_FLAGS += $(COMPILE_FLAGS_$(MODE))
 # In VC8, the way to disable exceptions is to remove all /EH* flags, and to
 # define _HAS_EXCEPTIONS=0 (for C++ headers) and _ATL_NO_EXCEPTIONS (for ATL).
 COMPILE_FLAGS += -D_HAS_EXCEPTIONS=0
+
+# glint_pad is an MFC app, they want to have exceptions
+PAD_CPPFLAGS = /EHsc
 
 CFLAGS = $(COMPILE_FLAGS)
 CXXFLAGS = $(COMPILE_FLAGS) /TP /J
@@ -186,6 +190,12 @@ LINKFLAGS = /NOLOGO /OUT:$@ /DEBUG /RELEASE /MACHINE:X86 $(LINKFLAGS_$(MODE)) $(
 
 LINKFLAGS_GLINT_TEST = $(LINKFLAGS)
 LINKFLAGS_HELLO_WORLD = $(LINKFLAGS) /SUBSYSTEM:WINDOWS
+LINKFLAGS_PAD = $(LINKFLAGS) /SUBSYSTEM:WINDOWS /ENTRY:wWinMainCRTStartup
+ifeq ($(MODE),dbg)
+LINKFLAGS_PAD += uafxcwd.lib
+else
+LINKFLAGS_PAD += uafxcw.lib
+endif
 
 RC = rc
 RCFLAGS_dbg = /DDEBUG=1

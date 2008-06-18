@@ -26,6 +26,9 @@
 #ifndef GLINT_SAMPLE_APPS_PAD_CHILD_VIEW_H__
 #define GLINT_SAMPLE_APPS_PAD_CHILD_VIEW_H__
 
+#include <string>
+#include <afxcmn.h>  // MFC support for Windows Common Controls
+
 namespace glint {
 
 class ChildView : public CRichEditCtrl {
@@ -62,15 +65,15 @@ class ChildView : public CRichEditCtrl {
   DECLARE_MESSAGE_MAP()
 
  private:
-  bool TryUpdate(const CString& text);
-  bool LoadFromFile(CString file_name);
-  bool SaveToFile(const CString& file_name);
+  bool TryUpdate(const std::wstring& text);
+  bool LoadFromFile(std::wstring file_name);
+  bool SaveToFile(const std::wstring& file_name);
   void SetModified(bool modified);
   bool UserWantsToDiscardChanges();
 
   COLORREF text_color_;
-  CString base_dir_;
-  CString file_name_;
+  std::wstring base_dir_;
+  std::wstring file_name_;
   bool modified_;
   CFont* font_;
   int parse_delay_;

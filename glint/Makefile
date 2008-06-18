@@ -227,5 +227,32 @@ HELLO_WORLD_RESOURCES = test.xml dialog_bg.png button_strip.png
 DEPS += $(HELLO_WORLD_OBJS:$(OBJ_SUFFIX)=.pp)
 VPATH += $(HELLO_WORLD_VPATH)
 
+#-------------------------------------------------------------------------------
+# HelloWorld sample app (for now, win32-only)
+
+ifeq ($(OS),win32)
+
+PAD_EXE = glint_pad$(EXE_SUFFIX)
+PAD_OBJ_OUTDIR = $(COMMON_OUTDIR)/pad_obj
+PAD_VPATH = \
+	sample_apps/pad
+
+PAD_CPP_SOURCES = \
+	child_view.cc \
+	glint_pad.cc \
+	main_frame.cc
+
+PAD_OBJS = $(patsubst %.cc,$(PAD_OBJ_OUTDIR)/%$(OBJ_SUFFIX),$(PAD_CPP_SOURCES))
+
+PAD_RC = glint_pad.rc
+PAD_RES = $(PAD_OBJ_OUTDIR)/glint_pad.res
+
+DEPS += $(PAD_OBJS:$(OBJ_SUFFIX)=.pp)
+VPATH += $(PAD_VPATH)
+
+endif
+
+#-------------------------------------------------------------------------------
+
 include tools/rules.mk
 

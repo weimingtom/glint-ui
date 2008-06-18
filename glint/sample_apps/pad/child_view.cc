@@ -25,27 +25,30 @@
 
 #include <string>
 
-#include "glint/sample_apps/pad/precompile.h"
-#include "glint/sample_apps/pad/glint_pad.h"
+#include <afxwin.h>  // MFC core and standard components
+#include <afxext.h>  // MFC extensions
+#include <afxcmn.h>  // MFC support for Windows Common Controls
 
+#include "glint/sample_apps/pad/glint_pad.h"
 #include "glint/include/root_ui.h"
+#include "glint/include/xml_parser.h"
 #include "glint/sample_apps/pad/child_view.h"
 #include "glint/sample_apps/pad/main_frame.h"
 
 namespace glint {
 
 static TCHAR kFileExtensionFilter[] =
-    { _T("XML Files (*.xml)|*.xml|All Files (*.*)|*.*||") };
+    { L"XML Files (*.xml)|*.xml|All Files (*.*)|*.*||" };
 
 static TCHAR kDefaultXml[] =
-  _T("<Node xmlns=\"http://www.google.com/glint\"\n")
-  _T("  background=\"#C0606060\"\n")
-  _T("  min_width=\"200\"\n")
-  _T("  min_height=\"100\"\n")
-  _T("  transform=\"translate(50 50)\">\n")
-  _T("    <SimpleText font_size=\"14\" text=\"Hello, World!\" ")
-  _T("       foreground=\"#C0F0A0\"/>\n")
-  _T("  </Node>\n");
+  L"<Node xmlns=\"http://www.google.com/glint\"\n"
+  L"  background=\"#C0606060\"\n"
+  L"  min_width=\"200\"\n"
+  L"  min_height=\"100\"\n"
+  L"  transform=\"translate(50 50)\">\n"
+  L"    <SimpleText font_size=\"14\" text=\"Hello, World!\" "
+  L"       foreground=\"#C0F0A0\"/>\n"
+  L"  </Node>\n";
 
 BEGIN_MESSAGE_MAP(ChildView, CEdit)
   ON_CONTROL_REFLECT(EN_CHANGE, &ChildView::OnEnChange)
@@ -72,6 +75,58 @@ BEGIN_MESSAGE_MAP(ChildView, CEdit)
   ON_UPDATE_COMMAND_UI(ID_FILE_NEW, &ChildView::OnUpdateFileNew)
 END_MESSAGE_MAP()
 
+std::wstring Utf8ToUtf16(const char* utf8_string) {
+  std::wstring result;
+  if (!utf8_string)
+    return result;
+
+  size_t length = strlen(utf8_string);
+  if (length == 0) {
+    return result;
+  }
+
+  int required =
+      ::MultiByteToWideChar(CP_UTF8, 0, utf8_string, length, NULL, 0);
+  if (required == 0) {
+    return result;
+  }
+
+  result.resize(required);
+  if (!::MultiByteToWideChar(CP_UTF8,
+                             0,
+                             utf8_string,
+                             length,
+                             &result.at(0),
+                             required)) {
+    result.clear();
+  }
+
+  return result;
+}
+
+std::string Utf16ToUtf8(const wchar_t* wide_string) {
+  std::string result;
+  if(!wide_string)
+    return result;
+
+  size_t length = wcslen(wide_string);
+  if (length == 0)
+    return result;
+
+  int required = ::WideCharToMultiByte(CP_UTF8, 0, wide_string, length,
+                                       NULL, 0, NULL, NULL);
+  if (required == 0)
+    return result;
+
+  result.resize(required);
+  if (!::WideCharToMultiByte(CP_UTF8, 0, wide_string, length,
+                             &result.at(0), required, NULL, NULL)) {
+    result.clear();
+  }
+
+  return result;
+}
+
 ChildView::ChildView() : font_(NULL), parse_delay_(-1) {
 }
 
@@ -90,27 +145,29 @@ BOOL ChildView::PreCreateWindow(CREATESTRUCT& cs) {  // NOLINT - MFC-defined
 }
 
 void ChildView::SetModified(bool modified) {
-  CString file_name = file_name_;
-  if (file_name.IsEmpty())
-    file_name = _T("Untitled.xml");
-  CString window_title = CString(_T("glint_pad - ")) + file_name;
-  if (modified)
-    window_title += _T(" *");
+  std::wstring file_name = file_name_;
+  if (file_name.empty()) {
+    file_name.assign(L"Untitled.xml");
+  }
+  std::wstring window_title = L"glint_pad - " + file_name;
+  if (modified) {
+    window_title += L" *";
+  }
   CWnd* frame = GetParentFrame();
-  frame->SetWindowText(window_title);
+  frame->SetWindowText(window_title.c_str());
   modified_ = modified;
 }
 
-bool ChildView::LoadFromFile(CString file_name) {
-  CString base_dir;
-  int last_slash = file_name.ReverseFind('\\');
+bool ChildView::LoadFromFile(std::wstring file_name) {
+  std::wstring base_dir;
+  int last_slash = file_name.rfind('\\');
   if (last_slash > 0) {
-    base_dir = file_name.Mid(0, last_slash + 1);  // including slash
+    base_dir = file_name.substr(0, last_slash + 1);  // including slash
   }
 
   base_dir_ = base_dir;
 
-  CFile file(file_name, CFile::modeRead | CFile::typeBinary);
+  CFile file(file_name.c_str(), CFile::modeRead | CFile::typeBinary);
 
   int string_length = static_cast<int>(file.GetLength());
   char* buffer = new char[string_length + 1];
@@ -118,8 +175,8 @@ bool ChildView::LoadFromFile(CString file_name) {
   buffer[string_length] = '\0';
   file.Close();
 
-  CString text = CString(Utf16FromUtf8(buffer));
-  SetWindowText(text.GetString());
+  std::wstring text = Utf8ToUtf16(buffer);
+  SetWindowText(text.c_str());
   TryUpdate(text);
   parse_delay_ = -1;
   delete [] buffer;
@@ -128,16 +185,16 @@ bool ChildView::LoadFromFile(CString file_name) {
   return true;
 }
 
-bool ChildView::SaveToFile(const CString& file_name) {
+bool ChildView::SaveToFile(const std::wstring& file_name) {
   bool result = false;
   CString text;
   GetWindowText(text);
-  CFile file(file_name,
+  CFile file(file_name.c_str(),
              CFile::modeCreate |
              CFile::modeWrite |
              CFile::typeBinary);
-  CStringA utf8_text(Utf8FromUtf16(text.GetString()));
-  file.Write(utf8_text.GetString(), utf8_text.GetLength());
+  std::string utf8_text(Utf16ToUtf8(text.GetString()));
+  file.Write(utf8_text.c_str(), utf8_text.length());
   file.Close();
   result = true;
   return result;
@@ -154,7 +211,7 @@ void ChildView::OnEnChange() {
   Invalidate();
 }
 
-bool ChildView::TryUpdate(const CString& text) {
+bool ChildView::TryUpdate(const std::wstring& text) {
   static RootUI* root_ui = NULL;
 
   if (!root_ui) {
@@ -164,9 +221,9 @@ bool ChildView::TryUpdate(const CString& text) {
   bool result = false;
   Node* root_node = NULL;
   MainFrame* frame = static_cast<MainFrame*>(GetParentFrame());
-  std::string base_uri(Utf8FromUtf16(base_dir_.GetString()));
+  std::string base_uri(Utf16ToUtf8(base_dir_.c_str()));
   XmlParser parser;
-  std::string xml_text(Utf8FromUtf16(text.GetString()));
+  std::string xml_text(Utf16ToUtf8(text.c_str()));
   result = parser.Parse(xml_text, base_uri, &root_node);
 
   std::string full_message;
@@ -197,7 +254,7 @@ bool ChildView::TryUpdate(const CString& text) {
 
   if (::IsWindow(frame->status_bar()->m_hWnd)) {
     frame->status_bar()->SetPaneText(
-        0, Utf16FromUtf8(full_message.c_str()), TRUE);
+        0, Utf8ToUtf16(full_message.c_str()).c_str(), TRUE);
   }
 
   root_ui->Show();
@@ -217,7 +274,7 @@ void ChildView::OnTimer(UINT_PTR nIDEvent) {
   if (parse_delay_ == 0) {
     CString text;
     GetWindowText(text);
-    TryUpdate(text);
+    TryUpdate(text.GetString());
   }
 }
 
@@ -229,7 +286,7 @@ int ChildView::OnCreate(LPCREATESTRUCT lpCreateStruct) {
   SetEventMask(mask | ENM_CHANGE /*| ENM_SELCHANGE*/);
   font_ = new CFont();
   font_->CreateFont(-14, 0, 0, 0, 400, 0, 0, 0, DEFAULT_CHARSET, 0, 0,
-                    ANTIALIASED_QUALITY, 0, CString(L"Courier New"));
+                    ANTIALIASED_QUALITY, 0, L"Courier New");
   SetFont(font_);
 
   SetModified(false);
@@ -287,16 +344,16 @@ void ChildView::OnUpdateFileOpen(CCmdUI *pCmdUI) {
 void ChildView::OnFileOpen() {
   if (!UserWantsToDiscardChanges())
     return;
-  CFileDialog file_dialog(TRUE, _T(".xml"), NULL, 0, kFileExtensionFilter);
+  CFileDialog file_dialog(TRUE, L".xml", NULL, 0, kFileExtensionFilter);
   if (file_dialog.DoModal() == IDOK) {
-    CString file_name = file_dialog.GetPathName();
+    std::wstring file_name = file_dialog.GetPathName();
     LoadFromFile(file_name);
     file_name_ = file_name;
   }
 }
 
 void ChildView::OnFileSave() {
-  if (file_name_.IsEmpty()) {
+  if (file_name_.empty()) {
     OnFileSaveAs();
     return;
   }
@@ -311,12 +368,12 @@ void ChildView::OnUpdateFileSave(CCmdUI *pCmdUI) {
 
 void ChildView::OnFileSaveAs() {
   CFileDialog file_dialog(FALSE,
-                          _T(".xml"),
-                          file_name_,
+                          L".xml",
+                          file_name_.c_str(),
                           0,
                           kFileExtensionFilter);
   if (file_dialog.DoModal() == IDOK) {
-    CString file_name = file_dialog.GetFileName();
+    std::wstring file_name = file_dialog.GetFileName();
     if (!SaveToFile(file_name))
       return;
     file_name_ = file_name;
@@ -331,7 +388,7 @@ void ChildView::OnUpdateFileSaveAs(CCmdUI *pCmdUI) {
 void ChildView::OnFileNew() {
   if (!UserWantsToDiscardChanges())
     return;
-  file_name_.Empty();
+  file_name_.clear();
   SetWindowText(kDefaultXml);
   SetModified(false);
 }
@@ -344,8 +401,8 @@ bool ChildView::UserWantsToDiscardChanges() {
   return !modified_ ||
          IDCANCEL != ::MessageBox(
              m_hWnd,
-             _T("Do you want to discard changes you've made?"),
-             _T("Create new file"),
+             L"Do you want to discard changes you've made?",
+             L"Create new file",
              MB_OKCANCEL);
 }
 
