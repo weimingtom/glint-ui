@@ -23,11 +23,11 @@
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "glint/sample_apps/pad/precompile.h"
+#include <afxwin.h>  // MFC core and standard components
+#include <afxext.h>  // MFC extensions
+
 #include "glint/sample_apps/pad/glint_pad.h"
 #include "glint/sample_apps/pad/main_frame.h"
-#include "talk/base/thread.h"
-#include "talk/base/win32socketserver.h"
 
 namespace glint {
 
@@ -35,7 +35,6 @@ BEGIN_MESSAGE_MAP(GlintPadApp, CWinApp)
 END_MESSAGE_MAP()
 
 // The one and only GlintPadApp object
-
 GlintPadApp theApp;
 
 BOOL GlintPadApp::InitInstance() {
@@ -67,14 +66,6 @@ BOOL GlintPadApp::InitInstance() {
   // The one and only window has been initialized, so show and update it
   pFrame->ShowWindow(SW_SHOW);
   pFrame->UpdateWindow();
-
-  // Need this to make our HTTP layer work.
-  // It is specific to Win32 main UI thread. Normally, the default
-  // PhysicalSocketServer works fine since the Thread::Run() is used
-  // instead of Win32 message pumping. Note: ss is leaked at the end.
-  talk_base::Thread* thread = talk_base::Thread::Current();
-  talk_base::Win32SocketServer* ss = new talk_base::Win32SocketServer(thread);
-  thread->set_socketserver(ss);
 
   return TRUE;
 }

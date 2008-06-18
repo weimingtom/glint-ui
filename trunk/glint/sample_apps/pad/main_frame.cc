@@ -23,7 +23,9 @@
 // OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 // ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "glint/sample_apps/pad/precompile.h"
+#include <afxwin.h>  // MFC core and standard components
+#include <afxext.h>  // MFC extensions
+
 #include "glint/sample_apps/pad/glint_pad.h"
 #include "glint/sample_apps/pad/main_frame.h"
 
