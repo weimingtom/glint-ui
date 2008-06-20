@@ -22,7 +22,7 @@ To create Glint UI, one performs following tasks:
 
 You can use simple "see it as you type" application to copy-paste examples from this document or experiment yourself. Just run sample application *glint_pad* (glint_pad.exe on Windows) from build directory. No installs necessary. It parses the XML you edit on the fly and renders what would be rendered on screen.
 
-*Note*: glint_pad is not yet included into Makefile - in couple of days it will be.
+*Note*: glint_pad is currently only built for Windows, but that's temporarily.
 
 XML for Glint is treated in a very transparent way - when parser sees an open tag, it finds a C++ type registered in Glint !TypeSystem (see type_system.{h,cc}) with similar name and creates an instance of this type. Then it reads all attributes and their values and looks into !TypeSystem again to find if the object specified by the opening tag actually has those properties. If there is a match, the callback registered for this type/property combination is called to set the value of the property. Simple. For nested objects, they are created the same way and then set as "default property" on a parent object.
 
