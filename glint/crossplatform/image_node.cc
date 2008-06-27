@@ -59,6 +59,19 @@ bool ImageNode::ReplaceImage(const std::string& file_name) {
   return true;
 }
 
+void ImageNode::ReplaceBitmap(int width, int height, const void* data) {
+  ASSERT(width >= 0 && height >= 0);
+  ASSERT(width == 0 || height == 0 || data);
+
+  ReleaseBitmap();
+  bitmap_ = new Bitmap(Point(), Size(width, height));
+  if (width > 0 && height > 0) {
+    memcpy(bitmap_->GetPixelAt(0, 0), data, width * height * 4);
+  }
+  bitmap_->PremultiplyAlpha();
+  Invalidate();
+}
+
 Size ImageNode::OnComputeRequiredSize(Size constraint) {
   Size image_size = bitmap_->size();
   return image_size;
