@@ -180,8 +180,7 @@ class RootUI : public BaseObject {
 
   void PostUpdate();
   bool CreatePlatformWindow();
-  bool UpdatePlatformWindow(const Rectangle& previous_bounds,
-                            const Rectangle& current_bounds);
+  bool UpdatePlatformWindow(const Rectangle& previous_bounds);
 
   // Hit testing and routing of the mouse (or other pointer-like) messages.
   // The logic of routing has 3 steps:
@@ -229,6 +228,8 @@ class RootUI : public BaseObject {
   std::map<const AnimationTimeline*, AnimationTimeline*> pending_animations_;
   typedef std::map<const AnimationTimeline*,
                    AnimationTimeline*>::iterator AnimationIterator;
+
+  Message last_mouse_message_;
 
   bool is_invalidated_ ;
   bool update_posted_;
