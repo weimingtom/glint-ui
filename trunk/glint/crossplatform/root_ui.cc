@@ -350,12 +350,13 @@ bool RootUI::CreatePlatformWindow() {
   return platform_window_ ? true : false;
 }
 
-bool RootUI::UpdatePlatformWindow(const Rectangle& previous_bounds) {
+bool RootUI::UpdatePlatformWindow(const Rectangle& previous_bounds,
+                                  const Rectangle& current_bounds) {
   if (platform_window_ && bitmap_) {
-    Point screen_origin(final_bounds().origin());
+    Point screen_origin(current_bounds.origin());
     bool screen_origin_changed = (previous_bounds.origin() != screen_origin);
 
-    Size screen_size(final_bounds().size());
+    Size screen_size(current_bounds.size());
 
     Rectangle* area = NULL;
 
@@ -483,6 +484,8 @@ bool RootUI::UpdateUI() {
   Size final_size = final_bounds_.size();
   int required_width = (final_size.width + 0x2F) & 0xFFFFFFD0;
   int required_height = (final_size.height + 0x2F) & 0xFFFFFFD0;
+  Rectangle current_bounds;
+  current_bounds.Set(previous_bounds);
 
   if (!bitmap_ ||
       bitmap_->size().width != required_width ||
@@ -493,12 +496,13 @@ bool RootUI::UpdateUI() {
     Rectangle* whole_bitmap = new Rectangle();
     whole_bitmap->Set(final_bounds_);
     dirty_rectangles_.Add(whole_bitmap);
+    current_bounds.Set(final_bounds_);
   }
 
   // render if no more work left
   if (!is_invalidated_) {
     CHECK(Draw());
-    CHECK(UpdatePlatformWindow(previous_bounds));
+    CHECK(UpdatePlatformWindow(previous_bounds, current_bounds));
 
     if (is_snapshot_pending_) {
       is_snapshot_pending_ = false;

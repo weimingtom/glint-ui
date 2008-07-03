@@ -180,7 +180,8 @@ class RootUI : public BaseObject {
 
   void PostUpdate();
   bool CreatePlatformWindow();
-  bool UpdatePlatformWindow(const Rectangle& previous_bounds);
+  bool UpdatePlatformWindow(const Rectangle& previous_bounds,
+                            const Rectangle& current_bounds);
 
   // Hit testing and routing of the mouse (or other pointer-like) messages.
   // The logic of routing has 3 steps:
