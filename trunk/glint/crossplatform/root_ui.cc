@@ -252,6 +252,7 @@ MessageResultCode RootUI::HandleMessage(const Message &message) {
     case GL_MSG_MBUTTONDOWN:
     case GL_MSG_MBUTTONUP:
     case GL_MSG_MOUSEMOVE:
+      last_mouse_message_ = message;
       HandleMouseMessage(message);
       return MESSAGE_HANDLED;
 
@@ -284,8 +285,11 @@ MessageResultCode RootUI::HandleMessage(const Message &message) {
 
     case GL_MSG_IDLE:
       is_snapshot_pending_ = !snapshot_directory_.empty();
-    // fall-through
+      BroadcastMessage(root_node_, message);
+      return MESSAGE_HANDLED;
+
     case GL_MSG_MOUSELEAVE:
+      last_mouse_message_.Clear();
       BroadcastMessage(root_node_, message);
       return MESSAGE_HANDLED;
 
@@ -350,13 +354,12 @@ bool RootUI::CreatePlatformWindow() {
   return platform_window_ ? true : false;
 }
 
-bool RootUI::UpdatePlatformWindow(const Rectangle& previous_bounds,
-                                  const Rectangle& current_bounds) {
+bool RootUI::UpdatePlatformWindow(const Rectangle& previous_bounds) {
   if (platform_window_ && bitmap_) {
-    Point screen_origin(current_bounds.origin());
+    Point screen_origin(final_bounds_.origin());
     bool screen_origin_changed = (previous_bounds.origin() != screen_origin);
 
-    Size screen_size(current_bounds.size());
+    Size screen_size(final_bounds_.size());
 
     Rectangle* area = NULL;
 
@@ -449,6 +452,20 @@ bool RootUI::DoLayoutLoop() {
       }
     }
 
+    // If the mouse is over the root ui (the last_mouse_message_ was not
+    // cleared by GL_MSG_MOUSELEAVE event), we have to simulate a mouse move
+    // to trigger hittest and proper mouse events if the objects underneath
+    // the mouse moved and changed.
+    if (last_mouse_message_.code != GL_MSG_IDLE) {
+      // In case the last mouse message was not a "mouse move", make it "mouse
+      // move". The rest of information (pressed buttons, modifiers and
+      // location) should stay the same as in the last mouse message.
+      last_mouse_message_.code = GL_MSG_MOUSEMOVE;
+      HandleMessage(last_mouse_message_);
+      if (is_invalidated_)
+        continue;
+    }
+
     // We are past layout and layout work items. So it's in a stable snapshot.
     // Now, start all pending (new) animations. They will grab post-trigger
     // (final) property values as they are being started.
@@ -482,10 +499,8 @@ bool RootUI::UpdateUI() {
   // Make it change in steps to avoid frequent reallocations when
   // UI tree changes its bounds
   Size final_size = final_bounds_.size();
-  int required_width = (final_size.width + 0x2F) & 0xFFFFFFD0;
-  int required_height = (final_size.height + 0x2F) & 0xFFFFFFD0;
-  Rectangle current_bounds;
-  current_bounds.Set(previous_bounds);
+  int required_width = final_size.width;
+  int required_height = final_size.height;
 
   if (!bitmap_ ||
       bitmap_->size().width != required_width ||
@@ -496,13 +511,12 @@ bool RootUI::UpdateUI() {
     Rectangle* whole_bitmap = new Rectangle();
     whole_bitmap->Set(final_bounds_);
     dirty_rectangles_.Add(whole_bitmap);
-    current_bounds.Set(final_bounds_);
   }
 
   // render if no more work left
   if (!is_invalidated_) {
     CHECK(Draw());
-    CHECK(UpdatePlatformWindow(previous_bounds, current_bounds));
+    CHECK(UpdatePlatformWindow(previous_bounds));
 
     if (is_snapshot_pending_) {
       is_snapshot_pending_ = false;
