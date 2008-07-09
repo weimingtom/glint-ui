@@ -46,8 +46,8 @@ static TCHAR kDefaultXml[] =
   L"  min_width=\"200\"\n"
   L"  min_height=\"100\"\n"
   L"  transform=\"translate(50 50)\">\n"
-  L"    <SimpleText font_size=\"14\" text=\"Hello, World!\" "
-  L"       foreground=\"#C0F0A0\"/>\n"
+  L"    <SimpleText font_size=\"14\" text=\"Hello, World!\""
+  L" foreground=\"#C0F0A0\"/>\n"
   L"  </Node>\n";
 
 BEGIN_MESSAGE_MAP(ChildView, CEdit)
