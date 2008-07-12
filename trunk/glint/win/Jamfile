@@ -1,0 +1,18 @@
+SubDir TOP win ;
+
+if $(OS) = NT {
+  SUBDIRC++FLAGS += -DSTRICT
+	            -DWIN32
+	            -D_CRT_SECURE_NO_DEPRECATE
+	            -D_WINDOWS
+	            -DWINVER=0x0500
+	            -D_WIN32_WINNT=0x0500
+	            -D_AFX_ALL_WARNINGS ;
+}
+
+Library platform :
+	formatted_text.cc
+	win32.cc
+;
+
+

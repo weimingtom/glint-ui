@@ -1,0 +1,17 @@
+SubDir TOP test ;
+
+Main          glint_test : glint_unittest.cc ;
+LinkLibraries glint_test : crossplatform platform expat ;
+
+# Copy result.
+OUT_DIR = $(ALL_LOCATE_TARGET:P) ;
+File $(OUT_DIR) : glint_test$(SUFEXE) ;
+
+if $(OS) = NT {
+  PDB_FILE = [ FDirName $(ALL_LOCATE_TARGET) glint_test.pdb ] ;
+  NoCare $(PDB_FILE) ;
+  File $(OUT_DIR) : $(PDB_FILE) ;
+}
+
+
+

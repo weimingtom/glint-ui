@@ -1,0 +1,15 @@
+SubDir TOP ;
+
+SubInclude TOP crossplatform ;
+SubInclude TOP third_party expat ;
+
+if $(OS) = NT {
+  SubInclude TOP win ;
+}
+
+SubInclude TOP test ;
+
+
+
+
+
