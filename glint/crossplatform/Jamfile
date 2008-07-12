@@ -1,0 +1,34 @@
+SubDir TOP crossplatform ;
+
+SUBDIRHDRS = $(TOP)/third_party/expat/v2_0_1/source/lib ;
+
+Library crossplatform :
+	allocator.cc
+	animation_timeline.cc
+	base_object.cc
+	bitmap.cc
+	button.cc
+	color.cc
+	column.cc
+	core.cc
+	current_time.cc
+	draw_stack.cc
+	image_node.cc
+	lexer.cc
+	message.cc
+	nine_grid.cc
+	node.cc
+	rectangle.cc
+	root_ui.cc
+	row.cc
+	simple_text.cc
+	size.cc
+	snapshot_stack.cc
+	tile_plane.cc
+	transform.cc
+	type_system.cc
+	xml_lite.cc
+	xml_parser.cc
+;
+
+

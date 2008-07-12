@@ -1,0 +1,18 @@
+SubDir TOP third_party expat ;
+
+SUBDIRHDRS = $(TOP)/third_party/expat/v2_0_1/source/lib ;
+SEARCH_SOURCE = $(SEARCH_SOURCE)/v2_0_1/source/lib ;
+
+if $(OS) = NT {
+  SUBDIRCCFLAGS = -DCOMPILED_FROM_DSP ;
+} else {
+  SUBDIRCCFLAGS = -DHAVE_EXPAT_CONFIG_H ;
+}
+
+Library expat :
+	xmlparse.c
+	xmltok.c
+	xmlrole.c
+;
+
+
