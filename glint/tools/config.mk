@@ -150,8 +150,7 @@ CPPFLAGS += /nologo \
             -DSTRICT \
             -D_UNICODE \
             -DUNICODE \
-            -DWIN32 \
-            -D_CRT_SECURE_NO_DEPRECATE
+            -DWIN32
 
 CPPFLAGS += -D_WINDOWS \
             -DWINVER=0x0500 \

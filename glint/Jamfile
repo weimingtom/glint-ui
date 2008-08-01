@@ -8,6 +8,7 @@ if $(OS) = NT {
 }
 
 SubInclude TOP test ;
+SubInclude TOP sample_apps ;
 
 
 

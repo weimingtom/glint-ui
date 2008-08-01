@@ -45,3 +45,18 @@ if $(OS) = NT {
   }
 }
 
+rule CopyExe {
+  OUT_DIR = $(ALL_LOCATE_TARGET:P) ;
+  File $(OUT_DIR) : $(<)$(SUFEXE) ;
+
+  if $(OS) = NT {
+    PDB_FILE = $(<).pdb ;
+    NoCare $(PDB_FILE) ;
+    File $(OUT_DIR) : $(PDB_FILE) ;
+  }
+}
+
+rule SubDirectory {
+SubDir $(<) ;
+LOCATE_TARGET = [ FDirName $(ALL_LOCATE_TARGET) $(<) ] ;
+}
