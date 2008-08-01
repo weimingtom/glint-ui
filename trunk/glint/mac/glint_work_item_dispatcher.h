@@ -34,22 +34,33 @@ using glint::WorkItem;
 using glint::RootUI;
 
 @interface GlintWorkItemDispatcher : NSObject {
-  RootUI* ui_;  // weak
-  WorkItem* workItem_;  // weak
+  RootUI* ui_;  // weak C++ reference.
+  WorkItem* workItem_;  // strong C++ reference, we release it.
+  NSMutableSet* container_;  
+  BOOL isCanceled_;
 }
 
-// Creates an autoreleased GlintWorkItemDispatcher for the given work item for
-// the given Glint ui
+// Creates a GlintWorkItemDispatcher for the given work item for
+// the given Glint ui.
 + (GlintWorkItemDispatcher*)dispatcherForWorkItem:(WorkItem*)item
                                            withUI:(RootUI*)ui;
 
 // Designated initializer, initializes the dispatcher with the given work item
-// for the given Glint ui
+// for the given Glint ui.
 - (id)initForWorkItem:(WorkItem*)item
                withUI:(RootUI*)ui;
+
+// In case we track all non-dispatched work items in a global set, keep the
+// reference so the work item can remove itself from it when it's dispatched.
+- (void)setContainer:(NSMutableSet*)container;
 
 // Dispatches the work item on the Glint ui it was created for. This is never
 // called directly. It only serves as a target for a run loop.
 - (void)dispatch;
+
+// Once dispatcher is queued for a callback on UI thread, it is not always
+// possible to cancel the callback itself. This method marks dispatcher
+// 'canceled' so subsequent callback is a noop.
+- (void)cancel;
 
 @end
