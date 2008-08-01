@@ -1,0 +1,12 @@
+SubDirectory sample_apps hello_world ;
+
+SEARCH_SOURCE += $(SEARCH_SOURCE)/../main ;
+
+Main          hello_world : hello_world.cc main_win32.cc ;
+LinkLibraries hello_world : crossplatform platform expat ;
+
+# Copy result.
+CopyExe hello_world ;
+
+
+

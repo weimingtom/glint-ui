@@ -237,14 +237,23 @@ bool ChildView::TryUpdate(const std::wstring& text) {
     text_color_ = RGB(255, 0, 0);
     SetBackgroundColor(0, RGB(255, 238, 240));
 
-    _snprintf(
-        const_cast<char*>(full_message.data()),
-        buf_len,
-        "Error line %d pos %d: %s\n",
-        line,
-        pos,
-        message.c_str());
-
+#if _MSC_VER >= 1400
+    // this is Visual C++ 2005 an up.
+    _snprintf_s(const_cast<char*>(full_message.data()),
+                buf_len,
+                _TRUNCATE,
+                "Error line %d pos %d: %s\n",
+                line,
+                pos,
+                message.c_str());
+#else
+    _snprintf(cinst_cast<char*>(full_message.data()),
+              buf_len,
+              "Error line %d pos %d: %s\n",
+              line,
+              pos,
+              message.c_str());
+#endif
   } else {
      text_color_ = RGB(0, 0, 0);
      SetBackgroundColor(1, RGB(255, 255, 255));
