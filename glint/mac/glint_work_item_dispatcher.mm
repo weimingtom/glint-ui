@@ -36,6 +36,7 @@ using namespace glint_darwin;
   if ((self = [super init])) {
     ui_ = ui;
     workItem_ = item;
+    isCanceled_ = NO;
   }
 
   return self;
@@ -43,14 +44,40 @@ using namespace glint_darwin;
 
 + (GlintWorkItemDispatcher*)dispatcherForWorkItem:(WorkItem*)item
                                            withUI:(RootUI*)ui {
-  return [[[GlintWorkItemDispatcher alloc] initForWorkItem:item withUI:ui]
-           autorelease];
+  return [[[GlintWorkItemDispatcher alloc] initForWorkItem:item withUI:ui] autorelease];
+}
+
+- (void)setContainer:(NSMutableSet*)container {
+  [container_ autorelease];
+  container_ = [container retain];
 }
 
 - (void)dispatch {
-  DarwinPlatform* darwin_platform = static_cast<DarwinPlatform*>(platform());
+  if (isCanceled_ == NO) { 
+    if (ui_ != NULL) {
+      // Remove itself from list of all work items.
+      [container_ removeObject:self];
+      
+      // Tell Glint about this workitem
+      Message message;
+      
+      message.code = GL_MSG_WORK_ITEM;
+      message.ui = ui_;
+      message.work_item = workItem_;
+      
+      ui_->HandleMessage(message);
+    } else {
+      if (workItem_ != NULL) {
+        // ui-less workitem; we'll just run it ourselves
+        workItem_->Run();
+        delete workItem_;
+      }
+    }
+  }
+}
 
-  darwin_platform->RunWorkItem(ui_, workItem_, self);
+- (void)cancel {
+  isCanceled_ = YES;
 }
 
 @end
