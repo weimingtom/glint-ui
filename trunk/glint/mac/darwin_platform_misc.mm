@@ -98,30 +98,36 @@ void DarwinPlatform::RunMessageLoop() {
 bool DarwinPlatform::PostWorkItem(RootUI *ui, WorkItem *work_item) {
   NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
 
-  GlintWorkItemDispatcher* dispatcher =
-      [GlintWorkItemDispatcher dispatcherForWorkItem:work_item withUI:ui];
-
+  GlintWindow* glint_window = nil;
   if (ui != NULL) {
     // This work item is associated with a window. We keep a record of it,
     // so we can cancel it if the window goes away before the item is run
-    GlintWindow* glint_window = ValidateWindow(
+    glint_window = ValidateWindow(
         reinterpret_cast<PlatformWindow*>(ui->GetPlatformWindow()));
-
     assert(glint_window);
-
-    NSMutableSet* work_items =
-        [work_items_for_window_ objectForKey:glint_window];
-    if (!work_items) {
-      work_items = [[[NSMutableSet alloc] init] autorelease];
-      [work_items_for_window_ setObject:work_items forKey:glint_window];
-    }
-
-    assert(work_items && ![work_items containsObject:dispatcher]);
-    [dispatcher setContainer:work_items];
-    [work_items addObject:dispatcher];
   }
 
-  // Schedule the work item on the main thread.
+  NSMutableSet* dispatchers = nil;
+
+  // Note: glint_window == nil is used for non-UI work items.
+  // In this case, don't create a list of 'window work items'.
+  if (glint_window != nil) {
+    // Retrieve a head of double-linked list of work item dispatchers.
+    dispatchers = [work_items_for_window_ objectForKey:glint_window];
+
+    if (dispatchers == nil) {
+      dispatchers = [[[NSMutableSet alloc] init] autorelease];
+      [work_items_for_window_ setObject:dispatchers forKey:glint_window];
+    }
+  }
+
+  // Creates a dispatcher and adds it as a head to the list.
+  GlintWorkItemDispatcher* dispatcher =
+      [GlintWorkItemDispatcher dispatcherForWorkItem:work_item
+                                              withUI:ui
+                                           container:dispatchers];
+
+  // Schedule the work item on the main thread. Retains dispatcher.
   [dispatcher performSelectorOnMainThread:@selector(dispatch)
                                withObject:nil
                             waitUntilDone:NO];
