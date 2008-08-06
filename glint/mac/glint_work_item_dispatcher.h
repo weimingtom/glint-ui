@@ -33,26 +33,32 @@
 using glint::WorkItem;
 using glint::RootUI;
 
+// Used to hold Glint WorkItem and manage its execution.
+// When Glint creates a Workitem for async execution on UI thread, an instance
+// of this class is created, WorkItem pointer stored in it and it is registered
+// with main UI thread message pump by means of performSelectorOnMainThread.
+// This will eventually cause 'dispatch' selector to be invoked by message pump.
+// We also keep a reference to this object in a global list attached to Glint
+// window, to 'cancel' all scheduled but not yet executed work items when the
+// window is closed.
 @interface GlintWorkItemDispatcher : NSObject {
+  NSMutableSet* dispatchers_;  // weak reference to containing list.
   RootUI* ui_;  // weak C++ reference.
   WorkItem* workItem_;  // strong C++ reference, we release it.
-  NSMutableSet* container_;  
   BOOL isCanceled_;
 }
 
 // Creates a GlintWorkItemDispatcher for the given work item for
 // the given Glint ui.
 + (GlintWorkItemDispatcher*)dispatcherForWorkItem:(WorkItem*)item
-                                           withUI:(RootUI*)ui;
+                                           withUI:(RootUI*)ui
+                                        container:(NSMutableSet*)dispatchers;
 
 // Designated initializer, initializes the dispatcher with the given work item
 // for the given Glint ui.
 - (id)initForWorkItem:(WorkItem*)item
-               withUI:(RootUI*)ui;
-
-// In case we track all non-dispatched work items in a global set, keep the
-// reference so the work item can remove itself from it when it's dispatched.
-- (void)setContainer:(NSMutableSet*)container;
+               withUI:(RootUI*)ui
+            container:(NSMutableSet*)dispatchers;
 
 // Dispatches the work item on the Glint ui it was created for. This is never
 // called directly. It only serves as a target for a run loop.
